@@ -35,7 +35,7 @@ object BusinessRecommendations {
     val sqlContext = SQLContext.getOrCreate(sc)
     sc.parallelize(1 to 10000)
   
-    val readReviewRatings = ReadConfig(Map("uri" -> (mongoURI + ".review_ratings3")))
+    val readReviewRatings = ReadConfig(Map("uri" -> (mongoURI + ".review_ratings")))
     val writeConfig = WriteConfig(Map("uri" -> (mongoURI + ".user_recommendations")))
     
     // Load the review review_stars data

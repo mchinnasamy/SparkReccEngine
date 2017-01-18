@@ -12,14 +12,14 @@ Setup:
 
 1) Clone this git project
 
-2) You may use the provided sample ratings file in the data folder. Simply unzip the file and use mongoimport to load data in to mongodb
+2) You may use the provided sample ratings file in the data folder. Simply unzip both the files and use mongoimport to load data in to mongodb
 
 Getting recommendations:
 
 1) If you follow the instructions from setup above, you will have review_ratings details in a collection. 
    Otherwise you will have to provide your ratings in a 'review_ratings' collection
 
-2) You may generate a few sample user preferences (say 20) by creating random values for userId, businessId, review_stars fields. 
+2) If required, you may generate a few sample user preferences (say 20) by creating random values for userId, businessId, review_stars fields. 
    Load this data in to a 'personal_ratings' collection
 
 3) Submit recommendations program by executing submit-scala.sh script
