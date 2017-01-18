@@ -1,0 +1,21 @@
+Requirements:
+
+1) Install JDK and set JAVA_HOME
+2) Install Spark 1.6.2 and set SPARK_HOME
+3) Include SPARK_HOME/bin in your PATH variable
+
+Setup:
+
+1) Clone this git project
+2) You may use the provided sample ratings file in the data folder. Simply unzip the file and use mongoimport to load data in to mongodb
+
+Getting recommendations:
+
+1) If you follow the instructions from setup above, you will have review_ratings details in a collection. Otherwise you will have to provide your ratings in a 'review_ratings' collection
+2) You may generate a few sample user preferences (say 20) by creating random values for userId, businessId, review_stars fields. Load this data in to a 'personal_ratings' collection
+3) Submit recommendations program by executing submit-scala.sh script
+   Usage: 
+      submit-scala.sh [-h <host>] [-p <port>] [-d <db_name>]
+4) Spark ML library uses ALS algorithm to generate recommendations and saves the output in a 'user_recommendations' collection
+
+Questions or comments, you may write to muthu@mongodb.com
