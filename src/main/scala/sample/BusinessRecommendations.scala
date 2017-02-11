@@ -18,17 +18,20 @@ object BusinessRecommendations {
   def main(args: Array[String]) {
   
     //Check for arguments for mongodb URI
-    if (args.length != 3) {
+    if (args.length != 4) {
         Console.err.println("Usage:")
-        Console.err.println("      businessRecommendations.jar <host> <port> <db_name>")
+        Console.err.println("      businessRecommendations.jar <host> <port> <db_name> <userId>")
         System.exit(1)
     }
   
     val HOST = args(0)
     val PORT = args(1)
     val DB = args(2)
+    val USER = args(3).toInt
+
     val mongoURI = "mongodb://" + HOST + ":" + PORT + "/" + DB
     println( "mongoURI: " + mongoURI )
+    println( "given userId: " + USER )
     
     // Set up spark configurations
     val sc = getSparkContext()
@@ -74,7 +77,10 @@ object BusinessRecommendations {
     val bestModel = trainedAndValidatedModel.fit(filteredRatings)
     
     // Read personal ratings collection 
-    val userRatings = MongoSpark.load(sc, readReviewRatings.copy(collectionName = "personal_ratings")).toDF[UserReviewRating]
+    val userRatingsRDD = MongoSpark.load(sc, readReviewRatings.copy(collectionName = "personal_ratings"))
+
+    // Using MongoDB spark connector pre-filter to get specific user's preferences
+    val userRatings = userRatingsRDD.withPipeline(Seq(Document.parse("{$match : { userId: " + USER + " }}"))).toDF[UserReviewRating]
   
     // Combine the datasets
     val combinedRatings = filteredRatings.unionAll(userRatings)
@@ -84,17 +90,17 @@ object BusinessRecommendations {
     
     import sqlContext.implicits._
 
-    val userId = 3000000;
+    val userId = USER;
     val unratedBusinesses = filteredRatings.filter(s"userId != $userId").select("businessId").distinct().map(r =>
           (userId, r.getAs[Int]("businessId"))).toDF("userId", "businessId")
     val recommendations = combinedModel.transform(unratedBusinesses)
   
     // Convert the recommendations into UserBusinessRatings
     val userRecommendations = recommendations.map(r =>
-          UserReviewRating(3000000, r.getAs[Int]("businessId"), r.getAs[Float]("prediction").toInt)).toDF()
+          UserReviewRating(userId, r.getAs[Int]("businessId"), r.getAs[Float]("prediction").toInt)).toDF()
   
     // The newly generated recommendations can now be written back to MongoDB and accessed by the business application.
-    MongoSpark.save(userRecommendations.write.mode("overwrite"), writeConfig)
+    MongoSpark.save(userRecommendations, writeConfig)
   
     // Clean up
     sc.stop()

@@ -2,11 +2,11 @@
 
 usage() { 
   echo "Usage: "
-  echo "      $0 [-h <host>] [-p <port>] [-d <db_name>]"
+  echo "      $0 [-h <host>] [-p <port>] [-d <db_name>] [-u <userId>]"
   exit 1; 
 }
 
-while getopts ":h:p:d:" o; do
+while getopts ":h:p:d:u:" o; do
     case "${o}" in
         h)
             h=${OPTARG}
@@ -17,6 +17,9 @@ while getopts ":h:p:d:" o; do
         d)
             d=${OPTARG}
             ;;
+        u)
+            u=${OPTARG}
+            ;;
         *)
             usage
             ;;
@@ -24,7 +27,7 @@ while getopts ":h:p:d:" o; do
 done
 shift $((OPTIND-1))
 
-if [ -z "${h}" ] || [ -z "${p}" ] || [ -z "${d}" ]; then
+if [ -z "${h}" ] || [ -z "${p}" ] || [ -z "${d}" ] || [ -z "${u}" ]; then
     usage
 fi
 
@@ -37,4 +40,4 @@ $SPARK_HOME/bin/spark-submit \
   --class sample.BusinessRecommendations \
   --master local[*] \
   --packages org.mongodb.spark:mongo-spark-connector_2.10:1.1.0 \
-  ${DIR}/target/scala-2.10/businessRecommendations_2.10-1.0.jar ${h} ${p} ${d}
+  ${DIR}/target/scala-2.10/businessRecommendations_2.10-1.0.jar ${h} ${p} ${d} ${u}

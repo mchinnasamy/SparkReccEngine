@@ -25,7 +25,7 @@ Getting recommendations:
 3) Submit recommendations program by executing submit-scala.sh script
 
    Usage: 
-      submit-scala.sh [-h <host>] [-p <port>] [-d <db_name>]
+      submit-scala.sh [-h <host>] [-p <port>] [-d <db_name>] [-u <userId>]
 
 4) Spark ML library uses ALS algorithm to generate recommendations and saves the output in a 'user_recommendations' collection
 
